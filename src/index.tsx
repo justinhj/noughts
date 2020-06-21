@@ -5,7 +5,7 @@ import './index.css';
 function Square(props) {
     return (
       <button
-        className="square"
+        className={props.winner ? "square-winner" : "square"}
         onClick={props.onClick}>
         {props.value}
       </button>
@@ -15,14 +15,16 @@ function Square(props) {
 type BoardProps = {
   squares: Array<String>;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  winningLines: Array<number>;
 };
 
 class Board extends React.Component<BoardProps> {
 
-  renderSquare(i) {
+  renderSquare(i, winner) {
     return <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        winner={winner}
       />
   }
 
@@ -30,19 +32,19 @@ class Board extends React.Component<BoardProps> {
     return (
       <div>
         <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
+          {this.renderSquare(0, this.props.winningLines.some(e => e === 0))}
+          {this.renderSquare(1, this.props.winningLines.some(e => e === 1))}
+          {this.renderSquare(2, this.props.winningLines.some(e => e === 2))}
         </div>
         <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
+          {this.renderSquare(3, this.props.winningLines.some(e => e === 3))}
+          {this.renderSquare(4, this.props.winningLines.some(e => e === 4))}
+          {this.renderSquare(5, this.props.winningLines.some(e => e === 5))}
         </div>
         <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
+          {this.renderSquare(6, this.props.winningLines.some(e => e === 6))}
+          {this.renderSquare(7, this.props.winningLines.some(e => e === 7))}
+          {this.renderSquare(8, this.props.winningLines.some(e => e === 8))}
         </div>
       </div>
     );
@@ -92,7 +94,7 @@ class Game extends React.Component<{}, GameState> {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    const winner = calculateWinner(squares);
+    const [winner, lines] = calculateWinner(squares);
 
     if (winner || squares[i]) {
       console.log("Illegal move");
@@ -113,12 +115,12 @@ class Game extends React.Component<{}, GameState> {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const squares = current.squares.slice();
-    const winner = calculateWinner(squares);
-    let status;
+    const [winner, lines] = calculateWinner(squares);
+    let status: String;
 
     if (winner) {
       status = 'Winner: ' + winner;
-    } else if (this.state.stepNumber == 9) {
+    } else if (this.state.stepNumber === 9) {
       status = 'Draw';
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -140,6 +142,7 @@ class Game extends React.Component<{}, GameState> {
         <div className="game-board">
           <Board
             squares={squares}
+            winningLines={lines}
             onClick={(i) => this.handleClick(i)}
             />
         </div>
@@ -162,7 +165,7 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-function calculateWinner(squares) {
+function calculateWinner(squares: Array<String>): [String | null, Array<number>] {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -176,8 +179,8 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [squares[a], lines[i]];
     }
   }
-  return null;
+  return [null, []];
 }

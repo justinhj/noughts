@@ -30,5 +30,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.38",
+    "@types/react-dom": "^16.9.8",
+    "@types/styled-components": "^5.1.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "source-map-loader": "^1.0.0",
+    "typescript": "^3.9.5"
   }
 }

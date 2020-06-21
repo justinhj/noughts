@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { range } from 'fp-ts/es6/Array'
 
 function Square(props) {
-    return (
-      <button
-        className={props.winner ? "square-winner" : "square"}
-        onClick={props.onClick}>
-        {props.value}
-      </button>
-    );
-  }
+  return (
+    <button
+      className={props.winner ? "square-winner" : "square"}
+      onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
+}
 
 type BoardProps = {
   squares: Array<String>;
@@ -22,30 +23,35 @@ class Board extends React.Component<BoardProps> {
 
   renderSquare(i, winner) {
     return <Square
-        value={this.props.squares[i]}
-        onClick={() => this.props.onClick(i)}
-        winner={winner}
-      />
+      key={i}
+      value={this.props.squares[i]}
+      onClick={() => this.props.onClick(i)}
+      winner={winner}
+    />
   }
+
+  renderRow(start: number) {
+    return range(0, 2).map(r => {
+        let n = start + r;
+        return this.renderSquare(n, this.props.winningLines.some(e =>
+          e === n))
+      })
+  }
+
+  renderBoard() {
+    return range(0,2).map(r =>
+      <div className="board-row"
+        key={r}
+        >
+        {this.renderRow(r * 3)}
+      </div>
+      );
+    }
 
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0, this.props.winningLines.some(e => e === 0))}
-          {this.renderSquare(1, this.props.winningLines.some(e => e === 1))}
-          {this.renderSquare(2, this.props.winningLines.some(e => e === 2))}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3, this.props.winningLines.some(e => e === 3))}
-          {this.renderSquare(4, this.props.winningLines.some(e => e === 4))}
-          {this.renderSquare(5, this.props.winningLines.some(e => e === 5))}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6, this.props.winningLines.some(e => e === 6))}
-          {this.renderSquare(7, this.props.winningLines.some(e => e === 7))}
-          {this.renderSquare(8, this.props.winningLines.some(e => e === 8))}
-        </div>
+       {this.renderBoard()}
       </div>
     );
   }
@@ -56,7 +62,7 @@ type SideProps = {
 };
 
 class Side extends React.Component<SideProps> {
-  render () {
+  render() {
     return (
       <div><b>Turns:</b> {this.props.value}</div>
     );
@@ -77,7 +83,7 @@ class Game extends React.Component<{}, GameState> {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{squares: Array(9).fill(null)}],
+      history: [{ squares: Array(9).fill(null) }],
       stepNumber: 0,
       xIsNext: true
     };
@@ -94,7 +100,7 @@ class Game extends React.Component<{}, GameState> {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
-    const [winner, lines] = calculateWinner(squares);
+    const [winner,] = calculateWinner(squares);
 
     if (winner || squares[i]) {
       console.log("Illegal move");
@@ -144,14 +150,14 @@ class Game extends React.Component<{}, GameState> {
             squares={squares}
             winningLines={lines}
             onClick={(i) => this.handleClick(i)}
-            />
+          />
         </div>
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
         <div className="side">
-          <Side value={this.state.stepNumber}/>
+          <Side value={this.state.stepNumber} />
         </div>
       </div>
     );

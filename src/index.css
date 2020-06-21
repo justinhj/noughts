@@ -63,7 +63,7 @@ ol, ul {
 .game {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   align-content: center;
   margin-top: 80px;
 }

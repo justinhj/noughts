@@ -15,7 +15,6 @@ function Square(props) {
 type BoardProps = {
   squares: Array<String>;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  status: String;
 };
 
 class Board extends React.Component<BoardProps> {
@@ -30,7 +29,6 @@ class Board extends React.Component<BoardProps> {
   render() {
     return (
       <div>
-        <div className="status">{this.props.status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -52,7 +50,7 @@ class Board extends React.Component<BoardProps> {
 }
 
 type SideProps = {
-  value: String;
+  value: number;
 };
 
 class Side extends React.Component<SideProps> {
@@ -117,8 +115,11 @@ class Game extends React.Component<{}, GameState> {
     const squares = current.squares.slice();
     const winner = calculateWinner(squares);
     let status;
+
     if (winner) {
       status = 'Winner: ' + winner;
+    } else if (this.state.stepNumber == 9) {
+      status = 'Draw';
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -140,15 +141,14 @@ class Game extends React.Component<{}, GameState> {
           <Board
             squares={squares}
             onClick={(i) => this.handleClick(i)}
-            status={status}
             />
         </div>
         <div className="game-info">
-          <div>Status {status}</div>
+          <div>{status}</div>
           <ol>{moves}</ol>
         </div>
         <div className="side">
-          <Side value={"10"}/>
+          <Side value={this.state.stepNumber}/>
         </div>
       </div>
     );

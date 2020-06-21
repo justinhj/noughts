@@ -1,3 +1,9 @@
+# Noughts
+
+This is the completed tutorial from https://reactjs.org/tutorial/tutorial.html
+
+## Project info
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
